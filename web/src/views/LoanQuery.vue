@@ -1,14 +1,17 @@
 <template>
+<div>
   <div id="input">
-      <el-input 
-        id="text"
-        type="textarea"
-        placeholder="请输入公式..." 
-        v-model="content" 
-        :autosize="{ minRows: 1, maxRows: 15}" 
-        clearable>
-      </el-input><el-button id="button" @click="query">查询</el-button>
+    <div id="text">
+      <el-input type="textarea" placeholder="请输入公式..." v-model="content" :autosize="{ minRows: 1, maxRows: 15}" />
+    </div>
+    <div id="button">
+      <el-button id="button" @click="query">查询</el-button>
+    </div>
   </div>
+  <div id="show" v-show="res">
+    show content
+  </div>
+</div>
 </template>
 
 <script>
@@ -17,6 +20,7 @@ export default {
   data() {
     return {
       content: "",
+      res: "1",
     }
   },
   methods: {
@@ -29,16 +33,20 @@ export default {
 
 <style scoped>
 #input {
-  min-width: 300px;
   padding: 10px;
   box-sizing: border-box;
-  display: inline-block;
+  display: table-row;
 }
 #text {
-  display: inline-block;
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
 }
+
 #button {
-  display: inline;
+  display: table-cell;
+  vertical-align: middle;
 }
+
 </style>
 
