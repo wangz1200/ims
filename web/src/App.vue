@@ -1,33 +1,82 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <el-container id="container">
+    <el-header id="header">信贷数据检索</el-header>
+    <el-container>
+      <el-aside id="nav" width="200px">
+        <ul>
+          <li><router-link to="/loan/query">查询检索</router-link></li>
+          <li><router-link to="/loan/export">报表导出</router-link></li>
+          <li><router-link to="/loan/update">数据更新</router-link></li>
+        </ul>
+      </el-aside>
+      <el-main id="main">
+        <el-scrollbar id="scrollbar" type="height:100%">
+          <router-view></router-view>
+        </el-scrollbar>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
-<style>
+<script>
+export default {
+}
+</script>
 
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+<style>
+* {
+  margin: 0px;
+  padding: 0px;
+  font: sans-serif;
+}
+
+#container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+#header {
+  width: 100%;
+  height: 150px;
+  line-height: 65px;
+  background-color: steelblue;
+  color: white;
   text-align: center;
-  color: #2c3e50;
+  user-select: none;
 }
 
 #nav {
-  padding: 30px;
+  width: 200px;
+  height: 100%;
+  background-color: lightslategray;
 }
 
 #nav a {
-  font-weight: bold;
-  color: #2c3e50;
+  text-decoration: none;
+  display: block;
+  line-height: 40px;
+  padding-left: 40px;
+  transition: .2s;
+  color: white;
+  border-bottom: 1px solid gray;
+  user-select: none;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+#nav a:hover {
+  color: red;
+  padding-left: 45px;
+  border-left: 5px solid red;
 }
+
+#main {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
+  left: 200px;
+  background-color: paleturquoise;
+}
+
+
 </style>
