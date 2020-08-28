@@ -2,19 +2,20 @@ package controller
 
 import (
 	"errors"
+
 	"github.com/gin-gonic/gin"
 )
 
 func Res(c *gin.Context, code int, data interface{}, err error) {
-	info := ""
+	msg := ""
 	if err != nil {
-		info = err.Error()
+		msg = err.Error()
 	}
 
-	c.JSON(code, gin.H {
+	c.JSON(code, gin.H{
 		"code": code,
 		"data": data,
-		"info": info,
+		"msg":  msg,
 	})
 }
 

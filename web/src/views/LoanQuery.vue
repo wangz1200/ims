@@ -15,17 +15,21 @@
 </template>
 
 <script>
+import axios from "../api"
+
 export default {
   name: 'LoanQuery',
   data() {
     return {
       content: "",
-      res: "1",
+      res: "",
     }
   },
   methods: {
     query() {
-
+      axios.post("/query").then(res=>{
+        console.log(res);
+      })
     }
   }
 }
@@ -37,6 +41,7 @@ export default {
   box-sizing: border-box;
   display: table-row;
 }
+
 #text {
   width: 100%;
   display: table-cell;
