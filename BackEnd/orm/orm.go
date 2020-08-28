@@ -39,12 +39,28 @@ func Close() {
 	}
 }
 
+func createTable(table interface{}, withDrop bool) {
+	if DB == nil {
+		panic("DB is nil")
+	}
+
+	if withDrop {
+		DB.DropTable(table)
+	}
+
+	DB.CreateTable(table)
+}
+
 type User struct {
 	User     string `gorm:"primary_key"`
 	Password string `gorm:"Default:'000000'"`
 	Name     string
 	Inst     string
 	State    string
+}
+
+func (this *User) CreateTable(withDrop bool) {
+	createTable(this, withDrop)
 }
 
 type LoanCust struct {
@@ -59,6 +75,10 @@ func (this *LoanCust) TableName() string {
 	return "cust"
 }
 
+func (this *LoanCust) CreateTable(withDrop bool) {
+	createTable(this, withDrop)
+}
+
 type LoanAcct struct {
 	Acct         string     `alias:"贷款账号" gorm:"primary_key"`
 	Cust         string     `alias:"客户代码"`
@@ -66,7 +86,7 @@ type LoanAcct struct {
 	Receipt      string     `alias:"借据号"`
 	Product      string     `alias:"核心产品号"`
 	ProductName  string     `alias:"产品名称"`
-	BusinessName string     `alias:"业务品种种类"`
+	BusinessName string     `alias:"业务品种名称"`
 	Form         string     `alias:"贷款形式"`
 	Property     string     `alias:"贷款性质"`
 	OpenDate     *time.Time `alias:"贷款起始日"`
@@ -83,6 +103,10 @@ type LoanAcct struct {
 
 func (this *LoanAcct) TableName() string {
 	return "loan_acct"
+}
+
+func (this *LoanAcct) CreateTable(withDrop bool) {
+	createTable(this, withDrop)
 }
 
 type LoanData struct {
@@ -102,6 +126,10 @@ func (this *LoanData) TableName() string {
 		date = &now
 	}
 	return "loan_data_" + date.Format("20060102")[0:4]
+}
+
+func (this *LoanData) CreateTable(withDrop bool) {
+	createTable(this, withDrop)
 }
 
 type LoanCustOnwer struct {
