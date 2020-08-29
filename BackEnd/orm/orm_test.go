@@ -28,7 +28,7 @@ func TestUpdateLoan(t *testing.T) {
 		defer Close()
 	}
 
-	book, err := xls.Open("C:/Users/wangz/Desktop/台账科目.xls", "utf-8")
+	book, err := xls.Open("D:/Desktop/台账科目.xls", "utf-8")
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -66,6 +66,8 @@ func TestUpdateLoan(t *testing.T) {
 			}
 		}
 	}
+
+	DB.Set().Select()
 
 	log.Println(keyMap)
 }

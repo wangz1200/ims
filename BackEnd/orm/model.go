@@ -1,54 +1,21 @@
 package orm
 
 import (
-	"BackEnd/config"
-	"fmt"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-var (
-	DB *gorm.DB = nil
-)
-
-func Init() error {
-	if DB != nil {
-		Close()
-	}
-
-	url := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
-		config.DbUser,
-		config.DbPassword,
-		config.DbHost,
-		config.DbPort,
-		config.DbName)
-	if db, err := gorm.Open("mysql", url); err != nil {
-		return err
-	} else {
-		DB = db
-	}
-
-	return nil
-}
-
-func Close() {
-	if DB != nil {
-		DB.Close()
-	}
-}
-
 func createTable(table interface{}, withDrop bool) {
-	if DB == nil {
-		panic("DB is nil")
+	if _mysql == nil {
+		panic("_mysql is nil")
 	}
 
 	if withDrop {
-		DB.DropTable(table)
+		_mysql.DropTable(table)
 	}
 
-	DB.CreateTable(table)
+	_mysql.CreateTable(table)
 }
 
 type User struct {
