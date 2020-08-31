@@ -39,7 +39,7 @@ func StrSlice(value interface{}, quote string) (ret []string) {
 		}
 
 	default:
-		ret = []string {fmt.Sprintf(p, value)}
+		ret = []string{fmt.Sprintf(p, value)}
 	}
 
 	return

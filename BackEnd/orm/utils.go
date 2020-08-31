@@ -8,7 +8,7 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-func InitFieldOffset(table interface{}, sheet *xlsx.Sheet) (map[string]int, error) {
+func initFieldOffset(table interface{}, sheet *xlsx.Sheet) (map[string]int, error) {
 	if sheet.MaxRow < 1 {
 		return nil, errors.New("Sheet Rows Not Enough")
 	}
@@ -45,15 +45,8 @@ func InitFieldOffset(table interface{}, sheet *xlsx.Sheet) (map[string]int, erro
 	return keyMap, nil
 }
 
-func MakeInsertClause(table interface{}, withUpdate bool) {
-	db := DB()
-	if withUpdate {
-		db = db.InstantSet("")
-	}
-}
-
 func UpdateFromSheet(table interface{}, sheet *xlsx.Sheet, withUpdate bool) error {
-	keyMap, err := InitFieldOffset(table, sheet)
+	keyMap, err := initFieldOffset(table, sheet)
 	if err != nil {
 		return err
 	}
@@ -88,4 +81,7 @@ func UpdateFromSheet(table interface{}, sheet *xlsx.Sheet, withUpdate bool) erro
 	}
 
 	return nil
+}
+
+func IntertLoanAcct(values []map[string]interface{}, update bool) {
 }

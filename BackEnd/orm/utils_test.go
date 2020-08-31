@@ -8,9 +8,9 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-func TestKeyMap(t *testing.T) {
-	// go test -v utils_test.go utils.go model.go orm.go
+// go test -v utils_test.go utils.go model.go orm.go
 
+func KeyMap(t *testing.T) {
 	file := "D:/Desktop/123.xlsx"
 
 	xl, err := xlsx.OpenFile(file)
@@ -25,4 +25,9 @@ func TestKeyMap(t *testing.T) {
 		log.Fatal(err)
 
 	}
+}
+
+func TestIntertLoanAcct(t *testing.T) {
+	Init(true)
+	IntertLoanAcct(nil, true)
 }
