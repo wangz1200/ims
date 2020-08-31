@@ -2,22 +2,21 @@ package orm
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 
-	"github.com/extrame/xls"
+	"github.com/tealeg/xlsx"
 )
 
-func InitKeysOffset(table interface{}, sheet *xls.WorkSheet) (map[string]int, error) {
+func InitFieldOffset(table interface{}, sheet *xlsx.Sheet) (map[string]int, error) {
 	if sheet.MaxRow < 1 {
 		return nil, errors.New("Sheet Rows Not Enough")
 	}
 
-	header := sheet.Row(0)
+	header := sheet.Rows[0]
 	fieldMap := make(map[string]int)
-	for i := 0; i < int(sheet.MaxRow); i++ {
-		field := header.Col(i)
+	for i := 0; i < sheet.MaxCol; i++ {
+		field := header.Cells[i].Value
 		fieldMap[field] = i
 	}
 
@@ -46,27 +45,46 @@ func InitKeysOffset(table interface{}, sheet *xls.WorkSheet) (map[string]int, er
 	return keyMap, nil
 }
 
-func UpdateFromXls(table interface{}, sheet *xls.WorkSheet, withUpdate bool) error {
-	keyMap, err := InitKeysOffset(table, sheet)
+func MakeInsertClause(table interface{}, withUpdate bool) {
+	db := DB()
+	if withUpdate {
+		db = db.InstantSet("")
+	}
+}
+
+func UpdateFromSheet(table interface{}, sheet *xlsx.Sheet, withUpdate bool) error {
+	keyMap, err := InitFieldOffset(table, sheet)
 	if err != nil {
 		return err
 	}
 
 	var values []map[string]interface{}
-	for i := 1; i < int(sheet.MaxRow); i++ {
-		row := sheet.Row(i)
+	for i := 1; i < sheet.MaxRow; i++ {
+		row := sheet.Rows[i]
 		value := make(map[string]interface{})
 		for k, o := range keyMap {
-			if i == 20 {
-				v := row.Col(o)
-				fmt.Println(v)
-			}
-			val := row.Col(o)
+			val := row.Cells[o].Value
 			val = strings.ReplaceAll(val, " ", "")
 			val = strings.ReplaceAll(val, "\t", "")
 			value[k] = val
 		}
+		if v, ok := value["Cust"]; ok {
+			val := v.(string)
+			l := len(val)
+			if l > 11 {
+				value["Cust"] = val[l-11:]
+			}
+		}
+		if v, ok := value["Rate"]; ok {
+			val := v.(string)
+			val = strings.ReplaceAll(val, "%", "")
+			value["Rate"] = val
+		}
 		values = append(values, value)
+	}
+
+	if len(values) == 0 {
+		return errors.New("data is empty")
 	}
 
 	return nil

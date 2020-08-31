@@ -55,8 +55,8 @@ type LoanAcct struct {
 	FirstDate    *time.Time `name:"首次放款日期"`
 	Amount       float64    `name:"借据金额"`
 	Rate         float64    `name:"执行年利率"`
-	Period       string     `name:"客户代码"`
-	Guarantee    string     `name:"担保方式"`
+	Period       string     `name:"期限类型"`
+	Guarantee    string     `name:"担保方式" gorm:"Default:NULL"`
 	Investment   string     `name:"贷款投向"`
 	Repayment    string     `name:"还款方式"`
 	RepaymentDay string     `name:"还款日"`

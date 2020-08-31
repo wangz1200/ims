@@ -14,6 +14,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/tealeg/xlsx v1.0.5 // indirect
 	golang.org/x/sys v0.0.0-20200828194041-157a740278f4 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
