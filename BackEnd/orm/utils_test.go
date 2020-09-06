@@ -1,8 +1,8 @@
 package orm
 
 import (
-	"fmt"
 	"log"
+	"strings"
 	"testing"
 
 	"github.com/tealeg/xlsx"
@@ -10,24 +10,24 @@ import (
 
 // go test -v utils_test.go utils.go model.go orm.go
 
-func KeyMap(t *testing.T) {
-	file := "D:/Desktop/123.xlsx"
-
-	xl, err := xlsx.OpenFile(file)
+func TestKeyMap(t *testing.T) {
+	file := "C:/Users/wangz/Desktop/台账科目.xlsx"
+	book, err := xlsx.OpenFile(file)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
+	sheet := book.Sheets[0]
+	table := &LoanAcct{}
 
-	sheet := xl.Sheet["原始台账"]
-	fmt.Println(sheet.MaxRow)
-	if err := UpdateFromSheet(LoanAcct{}, sheet, true); err != nil {
-		log.Fatal(err)
-
-	}
-}
-
-func TestIntertLoanAcct(t *testing.T) {
 	Init(true)
-	IntertLoanAcct(nil, true)
+	is := (&InsertSheet{}).Model(table)
+	is.Stmt().SetCallback(func(value map[string]interface{}) {
+		if v, ok := value["Rate"]; ok {
+			value["Rate"] = strings.Trim(v.(string), "%")
+		}
+	})
+	if err := is.Sheet(sheet, true); err != nil {
+		log.Fatal(err)
+	}
 }

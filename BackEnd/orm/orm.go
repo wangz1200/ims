@@ -4,8 +4,8 @@ import (
 	"fmt"
 	c "ims/config"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 var _db *gorm.DB = nil
@@ -17,7 +17,7 @@ func DB() *gorm.DB {
 func Connect(url string) error {
 	Close()
 
-	if db, err := gorm.Open("mysql", url); err != nil {
+	if db, err := gorm.Open(mysql.Open(url), &gorm.Config{}); err != nil {
 		return err
 	} else {
 		_db = db
@@ -27,7 +27,6 @@ func Connect(url string) error {
 
 func Close() {
 	if _db != nil {
-		_db.Close()
 	}
 }
 
@@ -43,9 +42,9 @@ func Init(drop bool) error {
 		return err
 	}
 
-	createTable(&Cust{}, drop)
-	createTable(&LoanAcct{}, drop)
-	createTable(&LoanData{}, drop)
+	CreateTable(&Cust{}, drop)
+	CreateTable(&LoanAcct{}, drop)
+	//CreateTable(&LoanData{}, drop)
 
 	return nil
 }

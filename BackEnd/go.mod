@@ -11,11 +11,12 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/protobuf v1.4.2 // indirect
-	github.com/jinzhu/gorm v1.9.16
+	gorm.io/gorm v1.20.0
+	gorm.io/driver/mysql v1.0.1
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/tealeg/xlsx v1.0.5 // indirect
-	golang.org/x/sys v0.0.0-20200828194041-157a740278f4 // indirect
+	github.com/tealeg/xlsx v1.0.5
+	golang.org/x/sys v0.0.0-20200831180312-196b9ba8737a // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
