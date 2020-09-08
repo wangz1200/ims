@@ -55,13 +55,13 @@ func (this *LoanAcct) TableName() string {
 }
 
 type LoanData struct {
-	Acct           string     `gorm:"primary_key;index" desc:"贷款账号"`
-	State          string     `gorm:"default:'NULL'" desc:"台账状态"`
-	Balance        float64    `gorm:"default:0.00" desc:"借据余额"`
-	DebitCapital   float64    `gorm:"default:0.00" desc:"拖欠本金"`
-	DebitIntrest   float64    `gorm:"default:0.00" desc:"欠息"`
-	Classification string     `gorm:"default:'NULL'" desc:"五级分类"`
-	Date           *time.Time `gorm:"type:date;primary_key;index"`
+	Acct           string     `gorm:"column:acct;primary_key;index" desc:"贷款账号"`
+	State          string     `gorm:"column:state;default:'NULL'" desc:"台帐状态"`
+	Balance        float64    `gorm:"column:balance;default:0.00" desc:"借据余额"`
+	DebitCapital   float64    `gorm:"column:debit_capital;default:0.00" desc:"拖欠本金"`
+	DebitIntrest   float64    `gorm:"column:debit_intrest;default:0.00" desc:"欠息"`
+	Classification string     `gorm:"column:classification;default:'NULL'" desc:"五级分类"`
+	Date           *time.Time `gorm:"column:date;type:date;primary_key;index"`
 }
 
 func (this *LoanData) TableName() string {

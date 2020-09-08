@@ -3,7 +3,6 @@ package service
 import (
 	"ims/config"
 	"ims/controller"
-	"ims/model"
 	"ims/orm"
 
 	"github.com/gin-gonic/gin"
@@ -32,10 +31,9 @@ func PreFlight(c *gin.Context) {
 	}
 }
 
-func Start() (err error) {
-	if err = model.InitMySql(config.DbHost, config.DbPort, config.DbUser, config.DbPassword, config.DbName); err != nil {
-		orm.Close()
-		return
+func Start() error {
+	if err := orm.Init(); err != nil {
+		return err
 	}
 
 	router.Use(PreFlight)

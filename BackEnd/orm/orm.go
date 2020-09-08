@@ -36,15 +36,11 @@ func MySqlUrl(host string, port int, user string, password string, name string) 
 		user, password, host, port, name)
 }
 
-func Init(drop bool) error {
+func Init() error {
 	url := MySqlUrl(c.DbHost, c.DbPort, c.DbUser, c.DbPassword, c.DbName)
 	if err := Connect(url); err != nil {
 		return err
 	}
-
-	CreateTable(&Cust{}, drop)
-	CreateTable(&LoanAcct{}, drop)
-	//CreateTable(&LoanData{}, drop)
 
 	return nil
 }

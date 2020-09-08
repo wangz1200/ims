@@ -2,6 +2,8 @@ package orm
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"time"
@@ -20,7 +22,7 @@ type Column struct {
 }
 
 func parseDate(v string) (*time.Time, error) {
-	if t, err := time.Parse("2006-01-02", v); err != nil {
+	if t, err := time.Parse("20060102", v); err != nil {
 		return nil, err
 	} else {
 		return &t, nil
@@ -73,8 +75,9 @@ func (this *Insert) Statement() *gorm.Statement {
 	return this.db.Statement
 }
 
-func (this *Insert) SetCallback(callback ...func(map[string]interface{})) {
+func (this *Insert) Callback(callback ...func(map[string]interface{})) *Insert {
 	this.callback = callback
+	return this
 }
 
 func (this *Insert) Values(values []map[string]interface{}, update bool) error {
@@ -94,7 +97,6 @@ func (this *Insert) Values(values []map[string]interface{}, update bool) error {
 					f.DBName,
 				)
 			}
-
 		}
 		conflict = &clause.OnConflict{
 			Columns:   primary,
@@ -125,22 +127,16 @@ func (this *Insert) Values(values []map[string]interface{}, update bool) error {
 	return this.db.Error
 }
 
-type InsertSheet struct {
-	insert *Insert
-}
-
-func (this *InsertSheet) Model(model interface{}) *InsertSheet {
-	this.insert = (&Insert{}).Model(model)
-	return this
-}
-
-func (this *InsertSheet) initOffset(row *xlsx.Row) (map[string]int, error) {
+func (this *Insert) initOffset(row []string) (map[string]int, error) {
+	if len(row) == 0 {
+		return nil, errors.New("row is empty")
+	}
 	header := make(map[string]int)
-	for i, c := range row.Cells {
-		header[c.Value] = i
+	for i, c := range row {
+		header[c] = i
 	}
 	desc := make(map[string][]string)
-	for _, c := range this.insert.columns {
+	for _, c := range this.columns {
 		desc[c.Name] = c.Desc
 	}
 	offset := make(map[string]int)
@@ -148,25 +144,23 @@ func (this *InsertSheet) initOffset(row *xlsx.Row) (map[string]int, error) {
 		for _, v := range s {
 			if o, ok := header[v]; ok {
 				offset[k] = o
-			} else {
-				return nil, errors.New("field not exist")
 			}
 		}
 	}
 	return offset, nil
 }
 
-func (this *InsertSheet) Stmt() *Insert {
-	return this.insert
-}
-
-func (this *InsertSheet) Sheet(sheet *xlsx.Sheet, update bool) error {
+func (this *Insert) Sheet(sheet *xlsx.Sheet, update bool) error {
 	maxRow := sheet.MaxRow
 	maxCol := sheet.MaxCol
 	if maxRow <= 1 || maxCol <= 0 {
 		return errors.New("sheet row or col not illegal")
 	}
-	offset, err := this.initOffset(sheet.Row(0))
+	var row []string
+	for _, cell := range sheet.Row(0).Cells {
+		row = append(row, cell.Value)
+	}
+	offset, err := this.initOffset(row)
 	if err != nil {
 		return err
 	}
@@ -179,5 +173,55 @@ func (this *InsertSheet) Sheet(sheet *xlsx.Sheet, update bool) error {
 		}
 		values = append(values, value)
 	}
-	return this.insert.Values(values, update)
+	return this.Values(values, update)
+}
+
+func (this *Insert) Txt(txt *os.File, sep string, update bool) error {
+	return nil
+}
+
+func InsertCustSheet(sheet *xlsx.Sheet, update bool) error {
+	insert := (&Insert{}).Model(&Cust{}).
+		Callback(func(row map[string]interface{}) {
+			if v, ok := row["Cust"]; ok {
+				cust := v.(string)
+				l := len(cust)
+				if l > 11 {
+					row["Cust"] = cust[l-11:]
+				}
+			}
+		})
+	return insert.Sheet(sheet, update)
+}
+
+func InsertLoaAcctSheet(sheet *xlsx.Sheet, update bool) error {
+	insert := (&Insert{}).Model(&LoanAcct{}).
+		Callback(func(row map[string]interface{}) {
+			v := row["Rate"].(string)
+			row["Rate"] = strings.ReplaceAll(v, "%", "")
+		})
+	return insert.Sheet(sheet, update)
+}
+
+func InsertLoanDataSheet(date string, sheet *xlsx.Sheet, update bool) error {
+	t, err := parseDate(date)
+	if err != nil {
+		return err
+	}
+	model := &LoanData{
+		Date: t,
+	}
+	db := DB().Migrator()
+	fmt.Println(db.HasTable(model))
+	if db.HasTable(model.TableName()) == false {
+		if err := db.CreateTable(model); err != nil {
+			return err
+		}
+	}
+	insert := (&Insert{}).Model(model).
+		Callback(func(row map[string]interface{}) {
+			row["Date"] = date
+		})
+
+	return insert.Sheet(sheet, update)
 }
