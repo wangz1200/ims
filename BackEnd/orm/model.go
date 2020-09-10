@@ -57,35 +57,31 @@ func (this *Cust) TableName() string {
 }
 
 type LoanAcct struct {
-	Acct         string     `gorm:"column:acct;primary_key;default:'00000000000000000'" desc:"贷款账号"`
-	Cust         string     `gorm:"column:cust;default:'00000000000'" desc:"客户代码"`
-	Contract     string     `gorm:"column:contract;default:'00000000000000000'" desc:"合同编号"`
-	Receipt      string     `gorm:"column:receipt;default:'00000000000000000'" desc:"借据号"`
-	Product      string     `gorm:"column:product;default:'00000000'" desc:"核心产品号"`
-	Business1    string     `gorm:"column:business_1;default:'NULL'" desc:"业务品种1"`
-	Business2    string     `gorm:"column:business_2;default:'NULL'" desc:"业务品种2"`
-	Business3    string     `gorm:"column:business_3;default:'NULL'" desc:"业务品种3"`
-	Business4    string     `gorm:"column:business_4;default:'NULL'" desc:"业务品种4"`
-	Investment   string     `gorm:"column:investment_1;default:'NULL'" desc:"贷款投向"`
-	Form         string     `gorm:"column:form;default:'NULL'" desc:"贷款形式"`
-	Property     string     `gorm:"column:property;default:'NULL'" desc:"贷款性质"`
-	OpenDate     *time.Time `gorm:"column:open_date;type:date;default:'18991231'" desc:"贷款起始日"`
-	EndDate      *time.Time `gorm:"column:end_date;type:date;default:'18991231'" desc:"贷款终止日"`
-	FirstDate    *time.Time `gorm:"column:first_date;type:date;default:'18991231'" desc:"首次放款日期"`
-	Amount       float64    `gorm:"column:amount;default:0.00" desc:"借据金额"`
-	Rate         float64    `gorm:"column:rate;default:0.00" desc:"执行年利率"`
-	Period       string     `gorm:"column:period;default:'NULL'" desc:"期限类型"`
-	Guarantee    string     `gorm:"column:guarantee;default:'NULL'" desc:"担保方式"`
-	Repayment    string     `gorm:"column:rapayment;default:'NULL'" desc:"还款方式"`
-	RepaymentDay string     `gorm:"column:repayment_day;default:20" desc:"还款日"`
+	Acct         string     `gorm:"column:acct;primary_key;default:'00000000000000000'"`
+	Cust         string     `gorm:"column:cust;default:'00000000000'"`
+	Contract     string     `gorm:"column:contract;default:'00000000000000000'"`
+	Receipt      string     `gorm:"column:receipt;default:'00000000000000000'"`
+	Product      string     `gorm:"column:product;default:'00000000'"`
+	Business1    string     `gorm:"column:business_1;default:'NULL'"`
+	Business2    string     `gorm:"column:business_2;default:'NULL'"`
+	Business3    string     `gorm:"column:business_3;default:'NULL'"`
+	Business4    string     `gorm:"column:business_4;default:'NULL'"`
+	Investment   string     `gorm:"column:investment_1;default:'NULL'"`
+	Form         string     `gorm:"column:form;default:'NULL'"`
+	Property     string     `gorm:"column:property;default:'NULL'"`
+	OpenDate     *time.Time `gorm:"column:open_date;type:date;default:'18991231'"`
+	EndDate      *time.Time `gorm:"column:end_date;type:date;default:'18991231'"`
+	FirstDate    *time.Time `gorm:"column:first_date;type:date;default:'18991231'"`
+	Amount       float64    `gorm:"column:amount;default:0.00"`
+	Rate         float64    `gorm:"column:rate;default:0.00"`
+	Period       string     `gorm:"column:period;default:'NULL'"`
+	Guarantee    string     `gorm:"column:guarantee;default:'NULL'"`
+	Repayment    string     `gorm:"column:rapayment;default:'NULL'"`
+	RepaymentDay string     `gorm:"column:repayment_day;default:20"`
 }
 
 func (this *LoanAcct) TableName() string {
 	return "loan_acct"
-}
-
-func (this *LoanAcct) Desc() {
-
 }
 
 type LoanData struct {

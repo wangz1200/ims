@@ -140,6 +140,35 @@ func (this *Insert) Values(values []map[string]interface{}, update bool) error {
 	return this.db.Error
 }
 
+func (this *Insert) SheetFieldDesc() [][]string {
+	return [][]string{
+		{"Acct", "贷款账号"},
+		{"Cust", "客户代码"},
+		{"Contract", "合同编号"},
+		{"Receipt", "借据号"},
+		{"Product", "核心产品号"},
+		{"Business", "业务品种名称"},
+		{"Investment", "贷款投向"},
+		{"Form", "贷款形式"},
+		{"Property", "贷款性质"},
+		{"OpenDate", "贷款起始日"},
+		{"EndDate", "贷款终止日"},
+		{"FirstDate", "首次放款日期"},
+		{"Amount", "借据金额"},
+		{"Rate", "执行年利率"},
+		{"Period", "期限类型"},
+		{"Guarantee", "担保方式"},
+		{"Repayment", "还款方式"},
+		{"RepaymentDay", "还款日"},
+		{"State", "台账状态"},
+		{"Balance", "借据余额"},
+		{"DebitCapital", "拖欠本金"},
+		{"DebitIntrest", "利息"},
+		{"Classification", "五级分类"},
+		{"Date", "日期"},
+	}
+}
+
 func (this *Insert) initOffset(row []string) (map[string]int, error) {
 	if len(row) == 0 {
 		return nil, errors.New("row is empty")
