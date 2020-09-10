@@ -3,8 +3,10 @@ package orm
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,11 +24,22 @@ type Column struct {
 }
 
 func parseDate(v string) (*time.Time, error) {
-	if t, err := time.Parse("20060102", v); err != nil {
+	tt, err := time.Parse("20060102", v)
+	if err != nil {
 		return nil, err
 	} else {
-		return &t, nil
+		return &tt, nil
 	}
+}
+
+func convertFloat(num []uint8) float64 {
+	v := string(num)
+	f, _ := strconv.ParseFloat(v, 64)
+	return f
+}
+
+func convertDate(d string) string {
+	return strings.ReplaceAll(d, "-", "")[0:8]
 }
 
 type Insert struct {
@@ -204,12 +217,12 @@ func InsertLoaAcctSheet(sheet *xlsx.Sheet, update bool) error {
 }
 
 func InsertLoanDataSheet(date string, sheet *xlsx.Sheet, update bool) error {
-	t, err := parseDate(date)
+	d, err := parseDate(date)
 	if err != nil {
 		return err
 	}
 	model := &LoanData{
-		Date: t,
+		Date: d,
 	}
 	db := DB().Migrator()
 	fmt.Println(db.HasTable(model))
@@ -224,4 +237,15 @@ func InsertLoanDataSheet(date string, sheet *xlsx.Sheet, update bool) error {
 		})
 
 	return insert.Sheet(sheet, update)
+}
+
+func LoanTable(date string) (*gorm.DB, error) {
+	d, err := parseDate(date)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	loan := DB().Table((&LoanAcct{}).TableName()+" AS acct").
+		Joins(fmt.Sprintf("JOIN %s AS data ON %s=%s AND date=?", (&LoanData{Date: d}).TableName(), "acct.acct", "data.acct"), date)
+	return loan, nil
 }

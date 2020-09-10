@@ -52,9 +52,9 @@ func Start() error {
 		api.POST("/commit")
 	}
 
-	if err = router.Run(config.ListenPort); err != nil {
-		return
+	if err := router.Run(config.ListenPort); err != nil {
+		return err
 	}
 
-	return
+	return nil
 }

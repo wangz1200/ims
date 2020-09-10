@@ -4,6 +4,34 @@ import (
 	"time"
 )
 
+var (
+	LoanField = map[string]string{
+		"Acct":           "acct.acct",
+		"Cust":           "acct.cust",
+		"Contract":       "acct.contract",
+		"Product":        "acct.product",
+		"ProductName":    "acct.product_name",
+		"BusinessName":   "acct.business_name",
+		"Form":           "acct.form",
+		"Property":       "acct.property",
+		"OpenDate":       "acct.open_date",
+		"EndDate":        "acct.end_date",
+		"FirstDate":      "acct.first_date",
+		"Amount":         "acct.amount",
+		"Rate":           "acct.rate",
+		"Period":         "acct.period",
+		"Guarantee":      "acct.guarantee",
+		"Investment":     "acct.investment",
+		"Repayment":      "acct.repayment",
+		"RepaymentDay":   "acct.repayment_day",
+		"Balance":        "data.balance",
+		"DebitCapital":   "data.debit_capital",
+		"DebitIntrest":   "data.debit_intrest",
+		"Classification": "data.classification",
+		"Date":           "data.date",
+	}
+)
+
 type Table interface {
 	TableName() string
 }
@@ -34,8 +62,11 @@ type LoanAcct struct {
 	Contract     string     `gorm:"column:contract;default:'00000000000000000'" desc:"合同编号"`
 	Receipt      string     `gorm:"column:receipt;default:'00000000000000000'" desc:"借据号"`
 	Product      string     `gorm:"column:product;default:'00000000'" desc:"核心产品号"`
-	ProductName  string     `gorm:"column:product_name;default:'NULL'" desc:"产品名称"`
-	BusinessName string     `gorm:"column:business_name;default:'NULL'" desc:"业务品种名称"`
+	Business1    string     `gorm:"column:business_1;default:'NULL'" desc:"业务品种1"`
+	Business2    string     `gorm:"column:business_2;default:'NULL'" desc:"业务品种2"`
+	Business3    string     `gorm:"column:business_3;default:'NULL'" desc:"业务品种3"`
+	Business4    string     `gorm:"column:business_4;default:'NULL'" desc:"业务品种4"`
+	Investment   string     `gorm:"column:investment_1;default:'NULL'" desc:"贷款投向"`
 	Form         string     `gorm:"column:form;default:'NULL'" desc:"贷款形式"`
 	Property     string     `gorm:"column:property;default:'NULL'" desc:"贷款性质"`
 	OpenDate     *time.Time `gorm:"column:open_date;type:date;default:'18991231'" desc:"贷款起始日"`
@@ -45,7 +76,6 @@ type LoanAcct struct {
 	Rate         float64    `gorm:"column:rate;default:0.00" desc:"执行年利率"`
 	Period       string     `gorm:"column:period;default:'NULL'" desc:"期限类型"`
 	Guarantee    string     `gorm:"column:guarantee;default:'NULL'" desc:"担保方式"`
-	Investment   string     `gorm:"column:investment;default:'NULL'" desc:"贷款投向"`
 	Repayment    string     `gorm:"column:rapayment;default:'NULL'" desc:"还款方式"`
 	RepaymentDay string     `gorm:"column:repayment_day;default:20" desc:"还款日"`
 }
@@ -54,23 +84,22 @@ func (this *LoanAcct) TableName() string {
 	return "loan_acct"
 }
 
+func (this *LoanAcct) Desc() {
+
+}
+
 type LoanData struct {
 	Acct           string     `gorm:"column:acct;primary_key;index" desc:"贷款账号"`
 	State          string     `gorm:"column:state;default:'NULL'" desc:"台帐状态"`
-	Balance        float64    `gorm:"column:balance;default:0.00" desc:"借据余额"`
-	DebitCapital   float64    `gorm:"column:debit_capital;default:0.00" desc:"拖欠本金"`
-	DebitIntrest   float64    `gorm:"column:debit_intrest;default:0.00" desc:"欠息"`
+	Balance        float64    `gorm:"column:balance;type:decimal(32,2);default:0.00" desc:"借据余额"`
+	DebitCapital   float64    `gorm:"column:debit_capital;type:decimal(32,2);default:0.00" desc:"拖欠本金"`
+	DebitIntrest   float64    `gorm:"column:debit_intrest;type:decimal(32,2);default:0.00" desc:"欠息"`
 	Classification string     `gorm:"column:classification;default:'NULL'" desc:"五级分类"`
 	Date           *time.Time `gorm:"column:date;type:date;primary_key;index"`
 }
 
 func (this *LoanData) TableName() string {
-	date := this.Date
-	if date == nil {
-		now := time.Now()
-		date = &now
-	}
-	return "loan_data_" + date.Format("20060102")[0:4]
+	return "loan_data_" + this.Date.Format("20060102")[0:4]
 }
 
 type LoanCustOnwer struct {
