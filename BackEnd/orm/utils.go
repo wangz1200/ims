@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -19,7 +18,6 @@ type Column struct {
 	Name    string
 	DBName  string
 	Default string
-	Desc    []string
 	Primary bool
 }
 
@@ -64,7 +62,6 @@ func (this *Insert) Model(model interface{}) *Insert {
 		tag := field.Tag
 		col := &Column{}
 		col.Name = field.Name
-		col.Desc = strings.Split(tag.Get("desc"), "|")
 		for _, gorm := range strings.Split(tag.Get("gorm"), ";") {
 			v := strings.Split(gorm, ":")
 			k := v[0]
@@ -84,8 +81,8 @@ func (this *Insert) Model(model interface{}) *Insert {
 	return this
 }
 
-func (this *Insert) Statement() *gorm.Statement {
-	return this.db.Statement
+func (this *Insert) Columns() []*Column {
+	return this.columns
 }
 
 func (this *Insert) Callback(callback ...func(map[string]interface{})) *Insert {
@@ -140,56 +137,49 @@ func (this *Insert) Values(values []map[string]interface{}, update bool) error {
 	return this.db.Error
 }
 
-func (this *Insert) SheetFieldDesc() [][]string {
-	return [][]string{
-		{"Acct", "贷款账号"},
-		{"Cust", "客户代码"},
-		{"Contract", "合同编号"},
-		{"Receipt", "借据号"},
-		{"Product", "核心产品号"},
-		{"Business", "业务品种名称"},
-		{"Investment", "贷款投向"},
-		{"Form", "贷款形式"},
-		{"Property", "贷款性质"},
-		{"OpenDate", "贷款起始日"},
-		{"EndDate", "贷款终止日"},
-		{"FirstDate", "首次放款日期"},
-		{"Amount", "借据金额"},
-		{"Rate", "执行年利率"},
-		{"Period", "期限类型"},
-		{"Guarantee", "担保方式"},
-		{"Repayment", "还款方式"},
-		{"RepaymentDay", "还款日"},
-		{"State", "台账状态"},
-		{"Balance", "借据余额"},
-		{"DebitCapital", "拖欠本金"},
-		{"DebitIntrest", "利息"},
-		{"Classification", "五级分类"},
-		{"Date", "日期"},
+func LoanSheetField() map[string][]string {
+	return map[string][]string{
+		"Acct":           {"贷款账号"},
+		"Cust":           {"客户代码"},
+		"Contract":       {"合同编号"},
+		"Receipt":        {"借据号"},
+		"Product":        {"核心产品号"},
+		"Business":       {"业务品种名称"},
+		"Investment":     {"贷款投向"},
+		"Form":           {"贷款形式"},
+		"Property":       {"贷款性质"},
+		"OpenDate":       {"贷款起始日"},
+		"EndDate":        {"贷款终止日"},
+		"FirstDate":      {"首次放款日期"},
+		"Amount":         {"借据金额"},
+		"Rate":           {"执行年利率"},
+		"Period":         {"期限类型"},
+		"Guarantee":      {"担保方式"},
+		"Repayment":      {"还款方式"},
+		"RepaymentDay":   {"还款日"},
+		"State":          {"台账状态"},
+		"Balance":        {"借据余额"},
+		"DebitCapital":   {"拖欠本金"},
+		"DebitIntrest":   {"欠息"},
+		"Classification": {"五级分类"},
+		"Date":           {"日期"},
 	}
 }
 
-func (this *Insert) initOffset(row []string) (map[string]int, error) {
-	if len(row) == 0 {
-		return nil, errors.New("row is empty")
-	}
+func SheetOffset(row *xlsx.Row, fields map[string][]string) map[string]int {
 	header := make(map[string]int)
-	for i, c := range row {
-		header[c] = i
-	}
-	desc := make(map[string][]string)
-	for _, c := range this.columns {
-		desc[c.Name] = c.Desc
+	for i, c := range row.Cells {
+		header[c.Value] = i
 	}
 	offset := make(map[string]int)
-	for k, s := range desc {
-		for _, v := range s {
+	for k, desc := range fields {
+		for _, v := range desc {
 			if o, ok := header[v]; ok {
 				offset[k] = o
 			}
 		}
 	}
-	return offset, nil
+	return offset
 }
 
 func (this *Insert) Sheet(sheet *xlsx.Sheet, update bool) error {
@@ -202,7 +192,7 @@ func (this *Insert) Sheet(sheet *xlsx.Sheet, update bool) error {
 	for _, cell := range sheet.Row(0).Cells {
 		row = append(row, cell.Value)
 	}
-	offset, err := this.initOffset(row)
+	offset, err := this.SheetFieldOffset(row)
 	if err != nil {
 		return err
 	}
@@ -218,7 +208,45 @@ func (this *Insert) Sheet(sheet *xlsx.Sheet, update bool) error {
 	return this.Values(values, update)
 }
 
-func (this *Insert) Txt(txt *os.File, sep string, update bool) error {
+type SheetValues struct {
+	columns  []*Column
+	sheet    *xlsx.Sheet
+	fields   map[string][]string
+	callback []func(map[string]interface{})
+}
+
+func (this *SheetValues) Offset() map[string]int {
+	row := this.sheet.Row(0)
+	header := make(map[string]int)
+	for i, c := range row.Cells {
+		header[c.Value] = i
+	}
+	offset := make(map[string]int)
+	for k, desc := range this.fields {
+		for _, v := range desc {
+			if o, ok := header[v]; ok {
+				offset[k] = o
+			}
+		}
+	}
+	return offset
+}
+
+func (this *SheetValues) Defaults() map[string]string {
+	defaults := make(map[string]string)
+	for _, c := range this.columns {
+		defaults[c.Name] = c.Default
+	}
+	return defaults
+}
+
+func (this *SheetValues) Values() []map[string]interface{} {
+	offset := this.Offset()
+	defaults := this.Defaults()
+	var values []map[string]interface{}
+	for i := 1; i < this.sheet.MaxRow; i++ {
+
+	}
 	return nil
 }
 

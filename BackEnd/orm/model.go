@@ -66,7 +66,10 @@ type LoanAcct struct {
 	Business2    string     `gorm:"column:business_2;default:'NULL'"`
 	Business3    string     `gorm:"column:business_3;default:'NULL'"`
 	Business4    string     `gorm:"column:business_4;default:'NULL'"`
-	Investment   string     `gorm:"column:investment_1;default:'NULL'"`
+	Investment1  string     `gorm:"column:investment_1;default:'NULL'"`
+	Investment2  string     `gorm:"column:investment_2;default:'NULL'"`
+	Investment3  string     `gorm:"column:investment_3;default:'NULL'"`
+	Investment4  string     `gorm:"column:investment_4;default:'NULL'"`
 	Form         string     `gorm:"column:form;default:'NULL'"`
 	Property     string     `gorm:"column:property;default:'NULL'"`
 	OpenDate     *time.Time `gorm:"column:open_date;type:date;default:'18991231'"`
