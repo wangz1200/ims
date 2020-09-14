@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"ims/util"
+	"ims/utils"
 	"strings"
 )
 
@@ -27,7 +27,7 @@ func AS(field, alias string) string {
 }
 
 func IS(field string, value interface{}) string {
-	s := util.StrSlice(value, "'")
+	s := utils.StrSlice(value, "'")
 	if len(s) == 0 {
 		return ""
 	} else if len(s) == 1 {
@@ -38,7 +38,7 @@ func IS(field string, value interface{}) string {
 }
 
 func NOT(field string, value interface{}) string {
-	var s = util.StrSlice(value, "'")
+	var s = utils.StrSlice(value, "'")
 	if len(s) == 0 {
 		return ""
 	} else if len(s) == 1 {
